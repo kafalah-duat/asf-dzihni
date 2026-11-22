@@ -134,8 +134,9 @@ function render(){
  if(!canEdit()){document.querySelectorAll('[data-f],[data-dn]').forEach(e=>e.readOnly=true);document.querySelectorAll('.add,.x,[data-newdept]').forEach(e=>e.remove());const t=$('.hint');if(t)t.textContent='وضع القراءة فقط. للتعديل اضغط «تسجيل الدخول للتحرير» وأدخل مفتاح GitHub.'}
 }
 const busy=()=>document.activeElement&&document.activeElement.matches&&document.activeElement.matches('[data-f],[data-dn]');
+const WHY={401:'المفتاح غير صالح أو منتهي',403:'المفتاح بلا صلاحية الكتابة أو لم تتم الموافقة عليه',404:'المفتاح لا يصل إلى هذا المستودع',422:'تعذّرت الكتابة (ربما الفرع محمي)',conflict:'تعارض، أعد المحاولة'};
 function setSt(t,bad){status=t;off=!!bad;const s=$('#stt');if(s){s.textContent=t;s.parentNode.classList.toggle('off',!!bad)}}
-function persist(p){setSt('جارٍ الحفظ…');p.then(()=>setSt(GH?'تم الحفظ في GitHub ✓':'تم الحفظ في المتصفح'),()=>setSt('تعذّر الحفظ — تحقق من المفتاح',1))}
+function persist(p){setSt('جارٍ الحفظ…');p.then(()=>setSt(GH?'تم الحفظ في GitHub ✓':'تم الحفظ في المتصفح'),e=>{const c=e&&e.message;setSt('تعذّر الحفظ ('+c+'): '+(WHY[c]||'خطأ غير معروف'),1);console.error(e)})}
 const save=r=>persist(store.mut(x=>{const i=x.rows.findIndex(y=>y.id===r.id);i<0?x.rows.push(r):x.rows[i]=r;return x},'تحديث مشروع'));
 const T={};
 document.addEventListener('input',e=>{
